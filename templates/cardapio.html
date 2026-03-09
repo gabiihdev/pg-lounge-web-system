@@ -3,20 +3,28 @@
 {% block content %}
 <h2>Cardápio</h2>
 
-<div class="cardapio">
+{% for categoria, pratos in categorias.items() %}
 
-    {% for prato in pratos %}
+<div class="categoria">
 
-    <div class="prato-card">
-        <h3>{{ prato[0] }}</h3>
-        <p>{{ prato[1] }}</p>
-        <p><strong>Categoria:</strong> {{ prato[3] }}</p>
-        <p class="preco"><strong>Preço:</strong> {{ prato[2] }}</p>
+    <h3>{{ categoria }}</h3>
+
+    <div class="cardapio">
+
+        {% for prato in pratos %}
+
+        <div class="prato-card">
+            <h3>{{ prato[0] }}</h3>
+            <p>{{ prato[1] }}</p>
+            <p class="preco"><strong>Preço:</strong> {{ prato[2] }}</p>
+        </div>
+
+        {% endfor %}
+
     </div>
 
-    <hr>
-
-    {% endfor %}
 </div>
+
+{% endfor %}
 
 {% endblock %}
