@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 def get_pratos():
     conn = sqlite3.connect("database.db")
-    cursor = conn.cursor
+    cursor = conn.cursor()
     
     cursor.execute("SELECT nome, descricao, preco, categoria, imagem FROM pratos")
     pratos = cursor.fetchall()
