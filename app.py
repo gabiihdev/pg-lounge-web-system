@@ -19,7 +19,8 @@ def home():
 
 @app.route("/cardapio")
 def cardapio():
-    return render_template("cardapio.html")
+    pratos = get_pratos()
+    return render_template("cardapio.html", pratos=pratos)
 
 @app.route("/contato")
 def contato():
