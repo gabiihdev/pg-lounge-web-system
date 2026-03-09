@@ -1,0 +1,22 @@
+.cardapio {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.prato-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    width: 250px;
+    background-color: #f9f9f9;
+}
+
+.prato-card h3 {
+    margin-top: 0;
+}
+
+.preco {
+    font-weight: bold;
+    color: green;
+}
