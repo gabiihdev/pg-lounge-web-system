@@ -20,3 +20,12 @@
     font-weight: bold;
     color: green;
 }
+
+.categoria {
+    margin-bottom: 40px;
+}
+
+.categoria h3 {
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+}

@@ -20,7 +20,18 @@ def home():
 @app.route("/cardapio")
 def cardapio():
     pratos = get_pratos()
-    return render_template("cardapio.html", pratos=pratos)
+    
+    categorias = {}
+    
+    for prato in pratos:
+        categoria = prato[3]
+        
+        if categoria not in categorias:
+            categorias[categoria] = []
+            
+        categorias[categoria].append(prato)
+    
+    return render_template("cardapio.html", categorias=categorias)
 
 @app.route("/contato")
 def contato():
