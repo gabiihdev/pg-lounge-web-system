@@ -1,6 +1,17 @@
 from flask import Flask, render_template
+import sqlite3
 
 app = Flask(__name__)
+
+def get_pratos():
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor
+    
+    cursor.execute("SELECT nome, descricao, preco, categoria, imagem FROM pratos")
+    pratos = cursor.fetchall()
+    
+    conn.close()
+    return pratos
 
 @app.route("/")
 def home():
