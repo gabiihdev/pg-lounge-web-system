@@ -1,19 +1,22 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 
 {% block content %}
 <h2>Cardápio</h2>
 
-{% for prato in pratos %}
+<div class="cardapio">
 
-<div class="prato">
-    <h3>{{ prato[0] }}</h3>
-    <p>{{ prato[1] }}</p>
-    <p><strong>Categoria:</strong> {{ prato[3] }}</p>
-    <p><strong>Preço:</strong> {{ prato[2] }}</p>
+    {% for prato in pratos %}
+
+    <div class="prato-card">
+        <h3>{{ prato[0] }}</h3>
+        <p>{{ prato[1] }}</p>
+        <p><strong>Categoria:</strong> {{ prato[3] }}</p>
+        <p class="preco"><strong>Preço:</strong> {{ prato[2] }}</p>
+    </div>
+
+    <hr>
+
+    {% endfor %}
 </div>
-
-<hr>
-
-{% endfor %}
 
 {% endblock %}
