@@ -1,6 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Contato</h2>
-<p>Entre em contato conosco.</p>
+
+<div class="contato">
+
+    <h2>Contato</h2>
+
+    <div class="contato-container">
+
+        <div class="contato-info">
+
+            <p><i data-lucide="map-pin"></i> Travessa Filisteus, 9 - Cidade de Deus, Rio de Janeiro, RJ</p>
+
+            <p><i data-lucide="phone"></i> (21) 96626-9565</p>
+
+            <p><i data-lucide="clock"></i> Seg. a Sáb.: 10h às 02h<br>Domingo: 10h às 22h</p>
+
+        </div>
+
+        <div class="contato-form">
+
+            <form>
+
+                <input type="text" placeholder="Seu nome" required>
+
+                <input type="email" placeholder="Seu email" required>
+
+                <textarea placeholder="Sua mensagem" required></textarea>
+
+                <button type="submit" class="btn">Enviar</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}

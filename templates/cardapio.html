@@ -7,16 +7,48 @@
 
 <div class="categoria">
 
-    <h3>{{ categoria }}</h3>
+    <h3 class="titulo-categoria">
+
+        {% if categoria == "Carnes" %}
+        <i data-lucide="beef"></i>
+        {% elif categoria == "Aves" %}
+        <i data-lucide="drumstick"></i>
+        {% elif categoria == "Pescados" %}
+        <i data-lucide="fish"></i>
+        {% elif categoria == "Massas" %}
+        <i data-lucide="utensils"></i>
+        {% elif categoria == "Petiscos" %}
+        <i data-lucide="pizza"></i>
+        {% elif categoria == "Saladas" %}
+        <i data-lucide="leaf"></i>
+        {% elif categoria == "Guarnições" %}
+        <i data-lucide="utensils-crossed"></i>
+        {% elif categoria == "Sobremesas" %}
+        <i data-lucide="ice-cream"></i>
+        {% elif categoria == "Bebidas" %}
+        <i data-lucide="beer"></i>
+        {% endif %}
+
+        {{ categoria }}
+
+    </h3>
 
     <div class="cardapio">
 
         {% for prato in pratos %}
 
         <div class="prato-card">
-            <h3>{{ prato[0] }}</h3>
-            <p>{{ prato[1] }}</p>
-            <p class="preco"><strong>Preço:</strong> {{ prato[2] }}</p>
+
+            <img src="{{ url_for('static', filename='img/' + prato[4]) }}" class="img-prato">
+
+            <h3 class="nome">{{ prato[0] }}</h3>
+
+            <p class="descricao">{{ prato[1] }}</p>
+
+            <div class="footer-card">
+                <span class="preco">R$ {{ "%.2f"|format(prato[2]) }}</span>
+            </div>
+
         </div>
 
         {% endfor %}

@@ -1,6 +1,67 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Bem-vindo ao PG Lounge</h1>
-<p>Sistema Web Interno</p>
+
+<div class="home">
+    <h1 class="titulo">
+        Sabor, música e bons momentos
+    </h1>
+
+    <p class="slogan">
+        Ambiente aconchegante, comida de qualidade e bebida sempre gelada.
+    </p>
+
+    <a href="/cardapio" class="btn">Ver Cardápio</a>
+</div>
+
+<div class="sobre">
+    <div class="sobre-container">
+
+        <div class="sobre-texto">
+            <h2>Sobre nós</h2>
+
+            <p>
+                Inaugurado em 2021, o PG Lounge é o lugar ideal para quem busca boa comida,
+                bebida gelada e um ambiente acolhedor. Com um espaço pensado para proporcionar
+                conforto e momentos especiais, oferecemos pratos preparados com qualidade,
+                além de opções perfeitas para compartilhar com amigos e família.
+            </p>
+            <p>
+                Aqui, cada detalhe é pensado para criar uma experiência agradável, seja para
+                um encontro descontraído, um happy hour ou uma noite especial. Venha viver bons
+                momentos com a gente.
+            </p>
+        </div>
+
+        <div class="sobre-imagens">
+            <img src="{{ url_for('static', filename='img/ambiente1.png') }}">
+            <img src="{{ url_for('static', filename='img/ambiente2.png') }}">
+        </div>
+
+    </div>
+</div>
+
+<div class="destaques">
+    <h2>Nossos destaques</h2>
+
+    <div class="destaques-grid">
+
+        <div class="item">
+            <img src="{{ url_for('static', filename='img/picanha.jpg') }}">
+            <p>Picanha na brasa</p>
+        </div>
+
+        <div class="item">
+            <img src="{{ url_for('static', filename='img/chopp.jpg') }}">
+            <p>Chopp gelado</p>
+        </div>
+
+        <div class="item">
+            <img src="{{ url_for('static', filename='img/peixe.jpg') }}">
+            <p>Peixe frito</p>
+        </div>
+
+    </div>
+</div>
+
 {% endblock %}
