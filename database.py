@@ -14,6 +14,15 @@ def init_db():
         imagem TEXT
     )
     """)
+    
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS feedbacks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    comentario TEXT NOT NULL,
+    avaliacao INTEGER NOT NULL
+    )
+    """)
 
     conn.commit()
     conn.close()
