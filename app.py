@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 
 app = Flask(__name__)
@@ -13,9 +13,41 @@ def get_pratos():
     conn.close()
     return pratos
 
+def get_feedbacks_home():
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT nome, comentario, avaliacao 
+        FROM feedbacks 
+        ORDER BY id DESC 
+        LIMIT 3
+    """)
+
+    feedbacks = cursor.fetchall()
+    conn.close()
+    return feedbacks
+
+
+def get_feedbacks():
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT nome, comentario, avaliacao 
+        FROM feedbacks 
+        ORDER BY id DESC
+    """)
+
+    feedbacks = cursor.fetchall()
+    conn.close()
+    return feedbacks
+
 @app.route("/")
 def home():
-    return render_template("index.html")
+    feedbacks = get_feedbacks_home()
+    return render_template("index.html", feedbacks=feedbacks)
+
 
 @app.route("/cardapio")
 def cardapio():
@@ -33,6 +65,7 @@ def cardapio():
     
     return render_template("cardapio.html", categorias=categorias)
 
+
 @app.route("/contato")
 def contato():
     return render_template("contato.html")
@@ -43,7 +76,7 @@ def feedback():
     if request.method == "POST":
         nome = request.form["nome"]
         comentario = request.form["comentario"]
-        avaliacao = request.form["avaliacao"]
+        avaliacao = int(request.form["avaliacao"])
 
         conn = sqlite3.connect("database.db")
         cursor = conn.cursor()
@@ -56,9 +89,15 @@ def feedback():
         conn.commit()
         conn.close()
 
-        return redirect("/feedback")
+        return redirect(url_for("feedbacks")) 
 
     return render_template("feedback.html")
+
+
+@app.route("/feedbacks")
+def feedbacks():
+    feedbacks = get_feedbacks()
+    return render_template("feedbacks.html", feedbacks=feedbacks)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="feedbacks">
+    <h2>Todas as avaliações dos clientes</h2>
+
+    <div class="feedbacks-grid">
+
+        {% if feedbacks %}
+
+        {% for f in feedbacks %}
+        <div class="feedback-card">
+
+            <h3>{{ f[0] }}</h3>
+            <p>"{{ f[1] }}"</p>
+
+            <div class="avaliacao">
+                {% for i in range(f[2]) %}
+                <span class="estrela cheia">★</span>
+                {% endfor %}
+
+                {% for i in range(5 - f[2]) %}
+                <span class="estrela vazia">☆</span>
+                {% endfor %}
+            </div>
+
+        </div>
+        {% endfor %}
+
+        {% else %}
+
+        <p class="sem-feedback">
+            Ainda não há feedbacks cadastrados.
+        </p>
+
+        {% endif %}
+
+    </div>
+
+    <a href="/feedback" class="btn">Deixar feedback</a>
+
+</div>
+
+{% endblock %}

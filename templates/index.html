@@ -64,4 +64,45 @@
     </div>
 </div>
 
+<div class="feedbacks-home">
+    <h2>Avaliações dos clientes</h2>
+
+    <div class="feedbacks-grid">
+
+        {% if feedbacks %}
+
+        {% for f in feedbacks %}
+        <div class="feedback-card">
+
+            <h4>{{ f[0] }}</h4>
+            <p>"{{ f[1] }}"</p>
+
+            <div class="avaliacao">
+                {% for i in range(f[2]) %}
+                <span class="estrela cheia">★</span>
+                {% endfor %}
+
+                {% for i in range(5 - f[2]) %}
+                <span class="estrela vazia">☆</span>
+                {% endfor %}
+            </div>
+
+        </div>
+        {% endfor %}
+
+        {% else %}
+
+        <p class="sem-feedback">
+            Ainda não há feedbacks. Seja o primeiro a avaliar!
+        </p>
+
+        {% endif %}
+
+    </div>
+
+    <a href="/feedbacks" class="btn">Ver todos</a>
+</div>
+
+</div>
+
 {% endblock %}
