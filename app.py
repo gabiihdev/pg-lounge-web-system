@@ -204,5 +204,41 @@ def excluir_prato(id):
 
     return redirect(url_for("admin_cardapio"))
 
+@app.route("/admin/adicionar-prato", methods=["GET", "POST"])
+def adicionar_prato():
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+
+        nome = request.form["nome"]
+        descricao = request.form["descricao"]
+        preco = request.form["preco"]
+        categoria = request.form["categoria"]
+        imagem = request.form["imagem"]
+
+        conn = sqlite3.connect("database.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO pratos
+            (nome, descricao, preco, categoria, imagem)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            nome,
+            descricao,
+            preco,
+            categoria,
+            imagem
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("admin_cardapio"))
+
+    return render_template("adicionar_prato.html")
+
 if __name__ == "__main__":
     app.run(debug=True)

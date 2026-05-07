@@ -447,6 +447,12 @@ h2 {
     background-color: #962d22;
 }
 
+.admin-topo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
 .footer {
     background-color: #4b2e2e;
     color: white;
