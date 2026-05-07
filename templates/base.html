@@ -22,6 +22,22 @@
         </div>
     </nav>
 
+    {% with mensagens = get_flashed_messages() %}
+    {% if mensagens %}
+
+    <div class="flash-container">
+
+        {% for mensagem in mensagens %}
+        <div class="flash-message">
+            {{ mensagem }}
+        </div>
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+    {% endwith %}
+
     <div class="container">
         {% block content %}{% endblock %}
     </div>
@@ -30,7 +46,7 @@
         <p>© 2026 PG Lounge - Todos os direitos reservados</p>
     </footer>
 
-        <script>
+    <script>
         lucide.createIcons();
     </script>
 

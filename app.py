@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 
 app = Flask(__name__)
@@ -94,7 +94,6 @@ def home():
     feedbacks = get_feedbacks_home()
     return render_template("index.html", feedbacks=feedbacks)
 
-
 @app.route("/cardapio")
 def cardapio():
     pratos = get_pratos()
@@ -110,7 +109,6 @@ def cardapio():
         categorias[categoria].append(prato)
     
     return render_template("cardapio.html", categorias=categorias)
-
 
 @app.route("/contato")
 def contato():
@@ -139,7 +137,6 @@ def feedback():
 
     return render_template("feedback.html")
 
-
 @app.route("/feedbacks")
 def feedbacks():
     feedbacks = get_feedbacks()
@@ -157,10 +154,13 @@ def login():
 
             session["admin"] = True
 
+            flash("Login realizado com sucesso!")
+
             return redirect(url_for("admin"))
 
-    return render_template("login.html")
+        flash("Usuário ou senha inválidos!")
 
+    return render_template("login.html")
 
 @app.route("/admin")
 def admin():
@@ -208,6 +208,8 @@ def excluir_prato(id):
 
     conn.commit()
     conn.close()
+    
+    flash("Prato excluído com sucesso!")
 
     return redirect(url_for("admin_cardapio"))
 
@@ -243,6 +245,8 @@ def adicionar_prato():
         conn.commit()
         conn.close()
 
+        flash("Prato cadastrado com sucesso!")
+        
         return redirect(url_for("admin_cardapio"))
 
     return render_template("adicionar_prato.html")
@@ -283,6 +287,8 @@ def editar_prato(id):
 
         conn.commit()
         conn.close()
+        
+        flash("Prato atualizado com sucesso!")
 
         return redirect(url_for("admin_cardapio"))
 
