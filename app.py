@@ -184,6 +184,25 @@ def admin_cardapio():
         "admin_cardapio.html",
         pratos=pratos
     )
+    
+@app.route("/admin/excluir-prato/<int:id>")
+def excluir_prato(id):
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM pratos WHERE id = ?",
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("admin_cardapio"))
 
 if __name__ == "__main__":
     app.run(debug=True)

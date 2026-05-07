@@ -13,6 +13,7 @@
             <th>Nome</th>
             <th>Preço</th>
             <th>Categoria</th>
+            <th>Ações</th>
         </tr>
 
         {% for prato in pratos %}
@@ -22,6 +23,13 @@
             <td>{{ prato[1] }}</td>
             <td>R$ {{ "%.2f"|format(prato[2]) }}</td>
             <td>{{ prato[3] }}</td>
+
+            <td>
+                <a href="/admin/excluir-prato/{{ prato[0] }}" class="btn-excluir"
+                    onclick="return confirm('Tem certeza que deseja excluir este prato?')">
+                    Excluir
+                </a>
+            </td>
         </tr>
 
         {% endfor %}
