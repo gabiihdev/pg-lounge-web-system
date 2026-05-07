@@ -172,6 +172,13 @@ def admin():
 
     return render_template("admin.html", dashboard=dashboard)
 
+@app.route("/logout")
+def logout():
+
+    session.pop("admin", None)
+
+    return redirect(url_for("home"))
+
 @app.route("/admin/cardapio")
 def admin_cardapio():
 

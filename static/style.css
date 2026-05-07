@@ -467,6 +467,27 @@ h2 {
     background-color: #a85f2e;
 }
 
+.admin-acoes {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.btn-sair {
+    display: inline-block;
+    margin-top: 20px;
+    margin-left: 15px;
+    padding: 12px 25px;
+    background-color: #c0392b;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.btn-sair:hover {
+    background-color: #962d22;
+}
+
 .footer {
     background-color: #4b2e2e;
     color: white;
