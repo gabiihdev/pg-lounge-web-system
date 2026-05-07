@@ -240,5 +240,59 @@ def adicionar_prato():
 
     return render_template("adicionar_prato.html")
 
+@app.route("/admin/editar-prato/<int:id>", methods=["GET", "POST"])
+def editar_prato(id):
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    if request.method == "POST":
+
+        nome = request.form["nome"]
+        descricao = request.form["descricao"]
+        preco = request.form["preco"]
+        categoria = request.form["categoria"]
+        imagem = request.form["imagem"]
+
+        cursor.execute("""
+            UPDATE pratos
+            SET nome = ?,
+                descricao = ?,
+                preco = ?,
+                categoria = ?,
+                imagem = ?
+            WHERE id = ?
+        """, (
+            nome,
+            descricao,
+            preco,
+            categoria,
+            imagem,
+            id
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("admin_cardapio"))
+
+    cursor.execute("""
+        SELECT id, nome, descricao, preco, categoria, imagem
+        FROM pratos
+        WHERE id = ?
+    """, (id,))
+
+    prato = cursor.fetchone()
+
+    conn.close()
+
+    return render_template(
+        "editar_prato.html",
+        prato=prato
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)

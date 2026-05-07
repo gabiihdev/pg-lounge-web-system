@@ -453,6 +453,20 @@ h2 {
     margin-bottom: 25px;
 }
 
+.btn-editar {
+    background-color: #c97a40;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    margin-right: 8px;
+}
+
+.btn-editar:hover {
+    background-color: #a85f2e;
+}
+
 .footer {
     background-color: #4b2e2e;
     color: white;

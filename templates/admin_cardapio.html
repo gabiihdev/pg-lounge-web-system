@@ -32,6 +32,10 @@
             <td>{{ prato[3] }}</td>
 
             <td>
+                <a href="/admin/editar-prato/{{ prato[0] }}" class="btn-editar">
+                    Editar
+                </a>
+                
                 <a href="/admin/excluir-prato/{{ prato[0] }}" class="btn-excluir"
                     onclick="return confirm('Tem certeza que deseja excluir este prato?')">
                     Excluir
