@@ -1,7 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 
 app = Flask(__name__)
+app.secret_key = "pg_lounge_secret"
+
+ADMIN_USER = "pglounge_admin"
+ADMIN_PASSWORD = "pg2026"
 
 def get_pratos():
     conn = sqlite3.connect("database.db")
@@ -98,6 +102,31 @@ def feedback():
 def feedbacks():
     feedbacks = get_feedbacks()
     return render_template("feedbacks.html", feedbacks=feedbacks)
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    if request.method == "POST":
+
+        usuario = request.form["usuario"]
+        senha = request.form["senha"]
+
+        if usuario == ADMIN_USER and senha == ADMIN_PASSWORD:
+
+            session["admin"] = True
+
+            return redirect(url_for("admin"))
+
+    return render_template("login.html")
+
+
+@app.route("/admin")
+def admin():
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("admin.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
