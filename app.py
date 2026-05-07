@@ -47,6 +47,31 @@ def get_feedbacks():
     conn.close()
     return feedbacks
 
+def get_dashboard_data():
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM pratos")
+    total_pratos = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM feedbacks")
+    total_feedbacks = cursor.fetchone()[0]
+
+    cursor.execute("SELECT AVG(avaliacao) FROM feedbacks")
+    media_avaliacoes = cursor.fetchone()[0]
+
+    conn.close()
+
+    if media_avaliacoes is None:
+        media_avaliacoes = 0
+
+    return {
+        "total_pratos": total_pratos,
+        "total_feedbacks": total_feedbacks,
+        "media_avaliacoes": round(media_avaliacoes, 1)
+    }
+
 @app.route("/")
 def home():
     feedbacks = get_feedbacks_home()
@@ -126,7 +151,9 @@ def admin():
     if "admin" not in session:
         return redirect(url_for("login"))
 
-    return render_template("admin.html")
+    dashboard = get_dashboard_data()
+
+    return render_template("admin.html", dashboard=dashboard)
 
 if __name__ == "__main__":
     app.run(debug=True)
