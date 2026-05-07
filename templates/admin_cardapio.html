@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="admin-dashboard">
+
+    <h2>Gerenciar Cardápio</h2>
+
+    <table class="tabela-admin">
+
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Categoria</th>
+        </tr>
+
+        {% for prato in pratos %}
+
+        <tr>
+            <td>{{ prato[0] }}</td>
+            <td>{{ prato[1] }}</td>
+            <td>R$ {{ "%.2f"|format(prato[2]) }}</td>
+            <td>{{ prato[3] }}</td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+
+{% endblock %}

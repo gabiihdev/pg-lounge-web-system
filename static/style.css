@@ -410,6 +410,30 @@ h2 {
     color: #c97a40;
 }
 
+.tabela-admin {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.tabela-admin th,
+.tabela-admin td {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.tabela-admin th {
+    background-color: #4b2e2e;
+    color: white;
+}
+
+.tabela-admin tr:hover {
+    background-color: #f5f1eb;
+}
+
 .footer {
     background-color: #4b2e2e;
     color: white;

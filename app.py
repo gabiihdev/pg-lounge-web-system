@@ -17,6 +17,23 @@ def get_pratos():
     conn.close()
     return pratos
 
+def get_pratos_admin():
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, nome, preco, categoria
+        FROM pratos
+        ORDER BY categoria
+    """)
+
+    pratos = cursor.fetchall()
+
+    conn.close()
+
+    return pratos
+
 def get_feedbacks_home():
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
@@ -154,6 +171,19 @@ def admin():
     dashboard = get_dashboard_data()
 
     return render_template("admin.html", dashboard=dashboard)
+
+@app.route("/admin/cardapio")
+def admin_cardapio():
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    pratos = get_pratos_admin()
+
+    return render_template(
+        "admin_cardapio.html",
+        pratos=pratos
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
