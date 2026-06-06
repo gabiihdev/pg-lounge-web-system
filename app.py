@@ -64,6 +64,23 @@ def get_feedbacks():
     conn.close()
     return feedbacks
 
+def get_feedbacks_admin():
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, nome, comentario, avaliacao
+        FROM feedbacks
+        ORDER BY id DESC
+    """)
+
+    feedbacks = cursor.fetchall()
+
+    conn.close()
+
+    return feedbacks
+
 def get_dashboard_data():
 
     conn = sqlite3.connect("database.db")
@@ -141,6 +158,40 @@ def feedback():
 def feedbacks():
     feedbacks = get_feedbacks()
     return render_template("feedbacks.html", feedbacks=feedbacks)
+
+@app.route("/admin/feedbacks")
+def admin_feedbacks():
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    feedbacks = get_feedbacks_admin()
+
+    return render_template(
+        "admin_feedbacks.html",
+        feedbacks=feedbacks
+    )
+    
+@app.route("/admin/excluir-feedback/<int:id>")
+def excluir_feedback(id):
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM feedbacks WHERE id = ?",
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    flash("Feedback excluído com sucesso!")
+
+    return redirect(url_for("admin_feedbacks"))
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
