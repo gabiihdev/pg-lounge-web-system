@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
 import sqlite3
 from datetime import datetime
 
@@ -467,6 +467,47 @@ def excluir_curriculo(id):
     flash("Currículo excluído com sucesso!")
 
     return redirect(url_for("admin_curriculos"))
+
+@app.route("/admin/exportar-curriculos")
+def exportar_curriculos():
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            nome,
+            email,
+            telefone,
+            area_interesse,
+            disponibilidade,
+            experiencia,
+            data_envio
+        FROM curriculos
+    """)
+
+    curriculos = cursor.fetchall()
+
+    conn.close()
+
+    def gerar_csv():
+
+        yield "Nome,E-mail,Telefone,Área,Disponibilidade,Experiência,Data de Envio\n"
+
+        for curriculo in curriculos:
+            yield ",".join(str(campo) for campo in curriculo) + "\n"
+
+    return Response(
+        gerar_csv(),
+        mimetype="text/csv",
+        headers={
+            "Content-Disposition":
+            "attachment; filename=curriculos.csv"
+        }
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
