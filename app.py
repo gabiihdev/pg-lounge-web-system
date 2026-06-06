@@ -93,6 +93,9 @@ def get_dashboard_data():
     cursor.execute("SELECT COUNT(*) FROM feedbacks")
     total_feedbacks = cursor.fetchone()[0]
 
+    cursor.execute("SELECT COUNT(*) FROM curriculos")
+    total_curriculos = cursor.fetchone()[0]
+
     cursor.execute("SELECT AVG(avaliacao) FROM feedbacks")
     media_avaliacoes = cursor.fetchone()[0]
 
@@ -104,6 +107,7 @@ def get_dashboard_data():
     return {
         "total_pratos": total_pratos,
         "total_feedbacks": total_feedbacks,
+        "total_curriculos": total_curriculos,
         "media_avaliacoes": round(media_avaliacoes, 1)
     }
     

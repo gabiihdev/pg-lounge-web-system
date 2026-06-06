@@ -351,7 +351,7 @@ h2 {
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
 }
 
@@ -435,6 +435,9 @@ h2 {
 .admin-acoes {
     display: flex;
     justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
     margin-top: 30px;
 }
 

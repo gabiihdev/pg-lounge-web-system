@@ -19,29 +19,34 @@
         </div>
 
         <div class="dashboard-card">
+            <h3>Currículos</h3>
+            <p>{{ dashboard.total_curriculos }}</p>
+        </div>
+
+        <div class="dashboard-card">
             <h3>Média das avaliações</h3>
             <p>{{ dashboard.media_avaliacoes }}</p>
         </div>
 
-        <div class="admin-acoes">
+    </div>
 
-            <a href="/admin/cardapio" class="btn">
-                Gerenciar Cardápio
-            </a>
+    <div class="admin-acoes">
 
-            <a href="/admin/feedbacks" class="btn">
-                Gerenciar Feedbacks
-            </a>
+        <a href="/admin/cardapio" class="btn">
+            Gerenciar Cardápio
+        </a>
 
-            <a href="/admin/curriculos" class="btn">
-                Gerenciar Currículos
-            </a>
+        <a href="/admin/feedbacks" class="btn">
+            Gerenciar Feedbacks
+        </a>
 
-            <a href="/logout" class="btn-sair">
-                Sair
-            </a>
+        <a href="/admin/curriculos" class="btn">
+            Gerenciar Currículos
+        </a>
 
-        </div>
+        <a href="/logout" class="btn-sair">
+            Sair
+        </a>
 
     </div>
 
