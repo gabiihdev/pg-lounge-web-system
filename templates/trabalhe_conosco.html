@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="feedback-box">
+
+    <h2>Trabalhe Conosco</h2>
+
+    <p class="descricao-curriculo">
+        Estamos sempre em busca de profissionais talentosos para fazer parte da equipe do PG Lounge.
+        Preencha o formulário abaixo e envie suas informações.
+    </p>
+
+    <form method="POST">
+
+        <div class="form-group">
+            <label>Nome</label>
+            <input type="text" name="nome" required>
+        </div>
+
+        <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label>Telefone</label>
+            <input type="tel" name="telefone" required>
+        </div>
+
+        <div class="form-group">
+            <label>Área de Interesse</label>
+
+            <select name="area_interesse" required>
+                <option value="">Selecione</option>
+                <option value="Atendimento">Atendimento</option>
+                <option value="Garçom/Garçonete">Garçom/Garçonete</option>
+                <option value="Cozinha">Cozinha</option>
+                <option value="Auxiliar de Cozinha">Auxiliar de Cozinha</option>
+                <option value="Bartender">Bartender</option>
+                <option value="Caixa">Caixa</option>
+                <option value="Gerência">Gerência</option>
+                <option value="Limpeza">Limpeza</option>
+                <option value="Outros">Outros</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Disponibilidade</label>
+
+            <select name="disponibilidade" required>
+                <option value="">Selecione</option>
+                <option value="Manhã">Manhã</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noite">Noite</option>
+                <option value="Integral">Integral</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Experiência</label>
+
+            <textarea name="experiencia" placeholder="Conte brevemente sua experiência profissional..."></textarea>
+        </div>
+
+        <button type="submit" class="btn">
+            Enviar currículo
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

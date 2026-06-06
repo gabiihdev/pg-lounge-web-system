@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Gerenciar Currículos</h2>
+
+<div class="admin-table">
+
+    <table>
+
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Telefone</th>
+            <th>Área</th>
+            <th>Disponibilidade</th>
+            <th>Experiência</th>
+            <th>Data de Envio</th>
+            <th>Ações</th>
+        </tr>
+
+        {% for curriculo in curriculos %}
+        <tr>
+
+            <td>{{ curriculo[0] }}</td>
+            <td>{{ curriculo[1] }}</td>
+            <td>{{ curriculo[2] }}</td>
+            <td>{{ curriculo[3] }}</td>
+            <td>{{ curriculo[4] }}</td>
+            <td>{{ curriculo[5] }}</td>
+            <td>{{ curriculo[6] }}</td>
+            <td>{{ curriculo[7] }}</td>
+
+            <td>
+                <a href="/admin/excluir-curriculo/{{ curriculo[0] }}" class="btn-excluir"
+                    onclick="return confirm('Tem certeza que deseja excluir este currículo?')">
+                    Excluir
+                </a>
+            </td>
+
+        </tr>
+        {% endfor %}
+
+    </table>
+
+</div>
+
+{% endblock %}

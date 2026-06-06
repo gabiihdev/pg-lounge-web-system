@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "pg_lounge_secret"
@@ -105,6 +106,31 @@ def get_dashboard_data():
         "total_feedbacks": total_feedbacks,
         "media_avaliacoes": round(media_avaliacoes, 1)
     }
+    
+def get_curriculos():
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            nome,
+            email,
+            telefone,
+            area_interesse,
+            disponibilidade,
+            experiencia,
+            data_envio
+        FROM curriculos
+        ORDER BY id DESC
+    """)
+
+    curriculos = cursor.fetchall()
+
+    conn.close()
+
+    return curriculos
 
 @app.route("/")
 def home():
@@ -357,6 +383,86 @@ def editar_prato(id):
         "editar_prato.html",
         prato=prato
     )
+
+@app.route("/trabalhe-conosco", methods=["GET", "POST"])
+def trabalhe_conosco():
+
+    if request.method == "POST":
+
+        nome = request.form["nome"]
+        email = request.form["email"]
+        telefone = request.form["telefone"]
+        area_interesse = request.form["area_interesse"]
+        disponibilidade = request.form["disponibilidade"]
+        experiencia = request.form["experiencia"]
+        data_envio = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+        conn = sqlite3.connect("database.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+        INSERT INTO curriculos (
+            nome,
+            email,
+            telefone,
+            area_interesse,
+            disponibilidade,
+            experiencia,
+            data_envio
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            nome,
+            email,
+            telefone,
+            area_interesse,
+            disponibilidade,
+            experiencia,
+            data_envio
+        ))
+
+        conn.commit()
+        conn.close()
+
+        flash("Currículo enviado com sucesso!")
+
+        return redirect(url_for("trabalhe_conosco"))
+
+    return render_template("trabalhe_conosco.html")
+
+@app.route("/admin/curriculos")
+def admin_curriculos():
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    curriculos = get_curriculos()
+
+    return render_template(
+        "admin_curriculos.html",
+        curriculos=curriculos
+    )
+    
+@app.route("/admin/excluir-curriculo/<int:id>")
+def excluir_curriculo(id):
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM curriculos WHERE id = ?",
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    flash("Currículo excluído com sucesso!")
+
+    return redirect(url_for("admin_curriculos"))
 
 if __name__ == "__main__":
     app.run(debug=True)
