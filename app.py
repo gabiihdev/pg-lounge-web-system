@@ -34,7 +34,7 @@ def get_pratos_admin():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id, nome, preco, categoria
+        SELECT id, nome, preco, categoria, imagem
         FROM pratos
         ORDER BY categoria
     """)
@@ -102,6 +102,9 @@ def get_dashboard_data():
 
     cursor.execute("SELECT COUNT(*) FROM feedbacks")
     total_feedbacks = cursor.fetchone()[0]
+    
+    cursor.execute("SELECT COUNT(*) FROM eventos")
+    total_eventos = cursor.fetchone()[0]
 
     cursor.execute("SELECT COUNT(*) FROM curriculos")
     total_curriculos = cursor.fetchone()[0]
@@ -117,6 +120,7 @@ def get_dashboard_data():
     return {
         "total_pratos": total_pratos,
         "total_feedbacks": total_feedbacks,
+        "total_eventos": total_eventos,
         "total_curriculos": total_curriculos,
         "media_avaliacoes": round(media_avaliacoes, 1)
     }
@@ -174,10 +178,39 @@ def get_eventos():
 
     return eventos_formatados
 
+def get_eventos_home():
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, titulo, descricao, data_evento, imagem
+        FROM eventos
+        WHERE data_evento >= datetime('now')
+        ORDER BY data_evento
+    """)
+
+    eventos = cursor.fetchall()
+
+    eventos_formatados = []
+
+    for evento in eventos:
+        eventos_formatados.append((
+            evento[0],
+            evento[1],
+            evento[2],
+            formatar_data_evento(evento[3]),
+            evento[4]
+        ))
+
+    conn.close()
+
+    return eventos_formatados
+
 @app.route("/")
 def home():
     feedbacks = get_feedbacks_home()
-    eventos = get_eventos()
+    eventos = get_eventos_home()
 
     return render_template(
         "index.html",

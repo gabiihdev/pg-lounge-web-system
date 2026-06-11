@@ -16,6 +16,7 @@
 
         <tr>
             <th>ID</th>
+            <th>Imagem</th>
             <th>Título</th>
             <th>Data e Hora</th>
             <th>Ações</th>
@@ -25,6 +26,9 @@
         <tr>
 
             <td>{{ evento[0] }}</td>
+            <td>
+                <img src="{{ url_for('static', filename='uploads/eventos/' ~ evento[4]) }}" width="80">
+            </td>
             <td>{{ evento[1] }}</td>
             <td>{{ evento[3] }}</td>
 

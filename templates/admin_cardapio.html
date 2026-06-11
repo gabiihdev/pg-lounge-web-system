@@ -17,6 +17,7 @@
 
         <tr>
             <th>ID</th>
+            <th>Imagem</th>
             <th>Nome</th>
             <th>Preço</th>
             <th>Categoria</th>
@@ -27,6 +28,9 @@
 
         <tr>
             <td>{{ prato[0] }}</td>
+            <td>
+                <img src="{{ url_for('static', filename='uploads/pratos/' ~ prato[4]) }}" width="80">
+            </td>
             <td>{{ prato[1] }}</td>
             <td>R$ {{ "%.2f"|format(prato[2]) }}</td>
             <td>{{ prato[3] }}</td>
@@ -35,7 +39,7 @@
                 <a href="/admin/editar-prato/{{ prato[0] }}" class="btn-editar">
                     Editar
                 </a>
-                
+
                 <a href="/admin/excluir-prato/{{ prato[0] }}" class="btn-excluir"
                     onclick="return confirm('Tem certeza que deseja excluir este prato?')">
                     Excluir
