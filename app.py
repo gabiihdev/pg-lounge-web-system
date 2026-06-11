@@ -136,6 +136,23 @@ def get_curriculos():
 
     return curriculos
 
+def get_eventos():
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, titulo, descricao, data_evento, imagem
+        FROM eventos
+        ORDER BY data_evento
+    """)
+
+    eventos = cursor.fetchall()
+
+    conn.close()
+
+    return eventos
+
 @app.route("/")
 def home():
     feedbacks = get_feedbacks_home()
@@ -507,6 +524,19 @@ def exportar_curriculos():
             "Content-Disposition":
             "attachment; filename=curriculos.csv"
         }
+    )
+    
+@app.route("/admin/eventos")
+def admin_eventos():
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    eventos = get_eventos()
+
+    return render_template(
+        "admin_eventos.html",
+        eventos=eventos
     )
 
 if __name__ == "__main__":

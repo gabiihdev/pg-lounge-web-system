@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Gerenciar Eventos</h2>
+
+<div class="admin-table">
+
+    <table>
+
+        <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Data</th>
+            <th>Ações</th>
+        </tr>
+
+        {% for evento in eventos %}
+        <tr>
+
+            <td>{{ evento[0] }}</td>
+            <td>{{ evento[1] }}</td>
+            <td>{{ evento[3] }}</td>
+
+            <td>
+                Em breve
+            </td>
+
+        </tr>
+        {% endfor %}
+
+    </table>
+
+</div>
+
+{% endblock %}

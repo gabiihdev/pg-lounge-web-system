@@ -36,6 +36,16 @@ def init_db():
         data_envio TEXT NOT NULL
     )
     """)
+    
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS eventos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        titulo TEXT NOT NULL,
+        descricao TEXT NOT NULL,
+        data_evento TEXT NOT NULL,
+        imagem TEXT
+    )
+    """)
 
     conn.commit()
     conn.close()
