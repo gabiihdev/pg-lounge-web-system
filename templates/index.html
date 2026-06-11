@@ -64,6 +64,49 @@
     </div>
 </div>
 
+<div class="eventos-home">
+
+    <h2>Próximos Eventos</h2>
+
+    <div class="eventos-grid">
+
+        {% if eventos %}
+
+            {% for evento in eventos %}
+
+            <div class="evento-card">
+
+                <img
+                    src="{{ url_for('static', filename='uploads/eventos/' + evento[4]) }}"
+                    alt="{{ evento[1] }}"
+                >
+
+                <h3>{{ evento[1] }}</h3>
+
+                <p>
+                    {{ evento[3] }}
+                </p>
+
+                <p>
+                    {{ evento[2] }}
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p class="sem-feedback">
+                Nenhum evento cadastrado no momento.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
 <div class="feedbacks-home">
     <h2>Avaliações dos clientes</h2>
 

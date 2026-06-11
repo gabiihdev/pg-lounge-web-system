@@ -1,12 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
 import sqlite3
 from datetime import datetime
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "pg_lounge_secret"
 
 ADMIN_USER = "pglounge_admin"
 ADMIN_PASSWORD = "pg2026"
+
+def formatar_data_evento(data_evento):
+    data = datetime.strptime(
+        data_evento,
+        "%Y-%m-%dT%H:%M"
+    )
+
+    return data.strftime("%d/%m/%Y às %H:%M")
 
 def get_pratos():
     conn = sqlite3.connect("database.db")
@@ -149,14 +159,31 @@ def get_eventos():
 
     eventos = cursor.fetchall()
 
+    eventos_formatados = []
+
+    for evento in eventos:
+        eventos_formatados.append((
+            evento[0],
+            evento[1],
+            evento[2],
+            formatar_data_evento(evento[3]),
+            evento[4]
+        ))
+
     conn.close()
 
-    return eventos
+    return eventos_formatados
 
 @app.route("/")
 def home():
     feedbacks = get_feedbacks_home()
-    return render_template("index.html", feedbacks=feedbacks)
+    eventos = get_eventos()
+
+    return render_template(
+        "index.html",
+        feedbacks=feedbacks,
+        eventos=eventos
+    )
 
 @app.route("/cardapio")
 def cardapio():
@@ -323,7 +350,16 @@ def adicionar_prato():
         descricao = request.form["descricao"]
         preco = request.form["preco"]
         categoria = request.form["categoria"]
-        imagem = request.form["imagem"]
+        imagem = request.files["imagem"]
+
+        nome_arquivo = secure_filename(imagem.filename)
+
+        imagem.save(
+            os.path.join(
+                "static/uploads/pratos",
+                nome_arquivo
+            )
+        )
 
         conn = sqlite3.connect("database.db")
         cursor = conn.cursor()
@@ -337,7 +373,7 @@ def adicionar_prato():
             descricao,
             preco,
             categoria,
-            imagem
+            nome_arquivo
         ))
 
         conn.commit()
@@ -364,7 +400,27 @@ def editar_prato(id):
         descricao = request.form["descricao"]
         preco = request.form["preco"]
         categoria = request.form["categoria"]
-        imagem = request.form["imagem"]
+        imagem = request.files["imagem"]
+        
+        if imagem.filename != "":
+
+            nome_arquivo = secure_filename(imagem.filename)
+
+            imagem.save(
+                os.path.join(
+                    "static/uploads/pratos",
+                    nome_arquivo
+                )
+            )
+
+        else:
+
+            cursor.execute(
+                "SELECT imagem FROM pratos WHERE id = ?",
+                (id,)
+            )
+
+            nome_arquivo = cursor.fetchone()[0]
 
         cursor.execute("""
             UPDATE pratos
@@ -379,7 +435,7 @@ def editar_prato(id):
             descricao,
             preco,
             categoria,
-            imagem,
+            nome_arquivo,
             id
         ))
 
@@ -538,6 +594,56 @@ def admin_eventos():
         "admin_eventos.html",
         eventos=eventos
     )
+    
+@app.route("/admin/adicionar-evento", methods=["GET", "POST"])
+def adicionar_evento():
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+
+        titulo = request.form["titulo"]
+        descricao = request.form["descricao"]
+        data_evento = request.form["data_evento"]
+        imagem = request.files["imagem"]
+
+        nome_arquivo = secure_filename(imagem.filename)
+
+        imagem.save(
+            os.path.join(
+                "static/uploads/eventos",
+                nome_arquivo
+            )
+        )
+
+        conn = sqlite3.connect("database.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO eventos
+            (
+                titulo,
+                descricao,
+                data_evento,
+                imagem
+            )
+            VALUES (?, ?, ?, ?)
+        """, (
+            titulo,
+            descricao,
+            data_evento,
+            nome_arquivo
+        ))
+
+        conn.commit()
+        conn.close()
+
+        flash("Evento cadastrado com sucesso!")
+
+        return redirect(url_for("admin_eventos"))
+
+    return render_template("adicionar_evento.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
