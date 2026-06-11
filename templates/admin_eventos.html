@@ -29,7 +29,14 @@
             <td>{{ evento[3] }}</td>
 
             <td>
-                Em breve
+                <a href="/admin/editar-evento/{{ evento[0] }}" class="btn-editar">
+                    Editar
+                </a>
+
+                <a href="/admin/excluir-evento/{{ evento[0] }}" class="btn-excluir"
+                    onclick="return confirm('Deseja realmente excluir este evento?')">
+                    Excluir
+                </a>
             </td>
 
         </tr>

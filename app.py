@@ -645,5 +645,105 @@ def adicionar_evento():
 
     return render_template("adicionar_evento.html")
 
+@app.route("/admin/editar-evento/<int:id>", methods=["GET", "POST"])
+def editar_evento(id):
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    if request.method == "POST":
+
+        titulo = request.form["titulo"]
+        descricao = request.form["descricao"]
+        data_evento = request.form["data_evento"]
+
+        imagem = request.files["imagem"]
+
+        if imagem.filename:
+            nome_arquivo = secure_filename(imagem.filename)
+
+            imagem.save(
+                os.path.join(
+                    "static/uploads/eventos",
+                    nome_arquivo
+                )
+            )
+
+            cursor.execute("""
+                UPDATE eventos
+                SET titulo = ?,
+                    descricao = ?,
+                    data_evento = ?,
+                    imagem = ?
+                WHERE id = ?
+            """, (
+                titulo,
+                descricao,
+                data_evento,
+                nome_arquivo,
+                id
+            ))
+
+        else:
+
+            cursor.execute("""
+                UPDATE eventos
+                SET titulo = ?,
+                    descricao = ?,
+                    data_evento = ?
+                WHERE id = ?
+            """, (
+                titulo,
+                descricao,
+                data_evento,
+                id
+            ))
+
+        conn.commit()
+        conn.close()
+
+        flash("Evento atualizado com sucesso!")
+
+        return redirect(url_for("admin_eventos"))
+
+    cursor.execute("""
+        SELECT id, titulo, descricao, data_evento, imagem
+        FROM eventos
+        WHERE id = ?
+    """, (id,))
+
+    evento = cursor.fetchone()
+
+    conn.close()
+
+    return render_template(
+        "editar_evento.html",
+        evento=evento
+    )
+    
+@app.route("/admin/excluir-evento/<int:id>")
+def excluir_evento(id):
+
+    if "admin" not in session:
+        return redirect(url_for("login"))
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM eventos WHERE id = ?",
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    flash("Evento excluído com sucesso!")
+
+    return redirect(url_for("admin_eventos"))
+
 if __name__ == "__main__":
     app.run(debug=True)
