@@ -21,6 +21,9 @@
             <th>Nome</th>
             <th>Preço</th>
             <th>Categoria</th>
+            <th>Curtidas</th>
+            <th>Descurtidas</th>
+            <th>Aprovação</th>
             <th>Ações</th>
         </tr>
 
@@ -34,6 +37,9 @@
             <td>{{ prato[1] }}</td>
             <td>R$ {{ "%.2f"|format(prato[2]) }}</td>
             <td>{{ prato[3] }}</td>
+            <td>{{ prato[5] }}</td>
+            <td>{{ prato[6] }}</td>
+            <td>{{ prato[7] }}%</td>
 
             <td>
                 <a href="/admin/editar-prato/{{ prato[0] }}" class="btn-editar">

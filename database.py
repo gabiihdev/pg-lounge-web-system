@@ -11,7 +11,9 @@ def init_db():
         descricao TEXT NOT NULL,
         preco REAL NOT NULL,
         categoria TEXT,
-        imagem TEXT
+        imagem TEXT,
+        curtidas INTEGER DEFAULT 0,
+        descurtidas INTEGER DEFAULT 0
     )
     """)
     

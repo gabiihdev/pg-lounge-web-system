@@ -39,14 +39,32 @@
 
         <div class="prato-card">
 
-            <img src="{{ url_for('static', filename='uploads/pratos/' + prato[4]) }}" class="img-prato">
+            <img src="{{ url_for('static', filename='uploads/pratos/' + prato[5]) }}" class="img-prato">
 
-            <h3 class="nome">{{ prato[0] }}</h3>
+            <h3 class="nome">{{ prato[1] }}</h3>
 
-            <p class="descricao">{{ prato[1] }}</p>
+            <p class="descricao">{{ prato[2] }}</p>
 
             <div class="footer-card">
-                <span class="preco">R$ {{ "%.2f"|format(prato[2]) }}</span>
+
+                <span class="preco">
+                    R$ {{ "%.2f"|format(prato[3]) }}
+                </span>
+
+                <div class="avaliacao-prato">
+
+                    <a href="{{ url_for('curtir_prato', id=prato[0]) }}">
+                        <i data-lucide="thumbs-up"></i>
+                        {{ prato[6] }}
+                    </a>
+
+                    <a href="{{ url_for('descurtir_prato', id=prato[0]) }}">
+                        <i data-lucide="thumbs-down"></i>
+                        {{ prato[7] }}
+                    </a>
+
+                </div>
+
             </div>
 
         </div>

@@ -28,6 +28,15 @@ def formatar_data_evento(data_evento):
 def admin_logado():
     return "admin" in session
 
+def calcular_aprovacao(curtidas, descurtidas):
+
+    total = curtidas + descurtidas
+
+    if total == 0:
+        return 0
+
+    return round((curtidas / total) * 100)
+
 # =========================
 # FUNÇÕES DE CONSULTA AO DB
 # =========================
@@ -36,7 +45,7 @@ def get_pratos():
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
     
-    cursor.execute("SELECT nome, descricao, preco, categoria, imagem FROM pratos")
+    cursor.execute("SELECT id, nome, descricao, preco, categoria, imagem, curtidas, descurtidas FROM pratos")
     pratos = cursor.fetchall()
     
     conn.close()
@@ -48,12 +57,32 @@ def get_pratos_admin():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id, nome, preco, categoria, imagem
+        SELECT id, nome, preco, categoria, imagem, curtidas, descurtidas
         FROM pratos
         ORDER BY categoria
     """)
 
-    pratos = cursor.fetchall()
+    pratos_db = cursor.fetchall()
+
+    pratos = []
+
+    for prato in pratos_db:
+
+        aprovacao = calcular_aprovacao(
+            prato[5],
+            prato[6]
+        )
+
+        pratos.append((
+            prato[0],
+            prato[1],
+            prato[2],
+            prato[3],
+            prato[4],
+            prato[5],
+            prato[6],
+            aprovacao
+        ))
 
     conn.close()
 
@@ -125,6 +154,42 @@ def get_dashboard_data():
 
     cursor.execute("SELECT AVG(avaliacao) FROM feedbacks")
     media_avaliacoes = cursor.fetchone()[0]
+    
+    cursor.execute("SELECT SUM(curtidas) FROM pratos")
+    total_curtidas = cursor.fetchone()[0] or 0
+
+    cursor.execute("SELECT SUM(descurtidas) FROM pratos")
+    total_descurtidas = cursor.fetchone()[0] or 0
+    
+    cursor.execute("""
+        SELECT nome, curtidas
+        FROM pratos
+        ORDER BY curtidas DESC
+        LIMIT 1
+    """)
+    prato_mais_curtido = cursor.fetchone()
+
+    cursor.execute("""
+        SELECT nome, descurtidas
+        FROM pratos
+        ORDER BY descurtidas DESC
+        LIMIT 1
+    """)
+    prato_mais_rejeitado = cursor.fetchone()
+    
+    if prato_mais_curtido and prato_mais_curtido[1] > 0:
+        nome_prato = prato_mais_curtido[0]
+        qtd_curtidas = prato_mais_curtido[1]
+    else:
+        nome_prato = "Sem avaliações"
+        qtd_curtidas = 0
+
+    if prato_mais_rejeitado and prato_mais_rejeitado[1] > 0:
+        nome_rejeitado = prato_mais_rejeitado[0]
+        qtd_descurtidas = prato_mais_rejeitado[1]
+    else:
+        nome_rejeitado = "Sem avaliações"
+        qtd_descurtidas = 0
 
     conn.close()
 
@@ -136,7 +201,13 @@ def get_dashboard_data():
         "total_feedbacks": total_feedbacks,
         "total_eventos": total_eventos,
         "total_curriculos": total_curriculos,
-        "media_avaliacoes": round(media_avaliacoes, 1)
+        "media_avaliacoes": round(media_avaliacoes, 1),
+        "total_curtidas": total_curtidas,
+        "total_descurtidas": total_descurtidas,
+        "prato_mais_curtido": nome_prato,
+        "curtidas_prato_mais_curtido": qtd_curtidas,
+        "prato_mais_rejeitado": nome_rejeitado,
+        "descurtidas_prato_mais_rejeitado": qtd_descurtidas
     }
     
 def get_curriculos():
@@ -243,7 +314,7 @@ def cardapio():
     categorias = {}
     
     for prato in pratos:
-        categoria = prato[3]
+        categoria = prato[4]
         
         if categoria not in categorias:
             categorias[categoria] = []
@@ -819,6 +890,55 @@ def excluir_evento(id):
     flash("Evento excluído com sucesso!")
 
     return redirect(url_for("admin_eventos"))
+
+@app.route("/curtir-prato/<int:id>")
+def curtir_prato(id):
+
+    votos = session.get("votos_pratos", {})
+
+    if str(id) not in votos:
+
+        conn = sqlite3.connect("database.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE pratos
+            SET curtidas = curtidas + 1
+            WHERE id = ?
+        """, (id,))
+
+        conn.commit()
+        conn.close()
+
+        votos[str(id)] = "curtida"
+        session["votos_pratos"] = votos
+
+    return redirect(url_for("cardapio"))
+
+
+@app.route("/descurtir-prato/<int:id>")
+def descurtir_prato(id):
+
+    votos = session.get("votos_pratos", {})
+
+    if str(id) not in votos:
+
+        conn = sqlite3.connect("database.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE pratos
+            SET descurtidas = descurtidas + 1
+            WHERE id = ?
+        """, (id,))
+
+        conn.commit()
+        conn.close()
+
+        votos[str(id)] = "descurtida"
+        session["votos_pratos"] = votos
+
+    return redirect(url_for("cardapio"))
 
 if __name__ == "__main__":
     app.run(debug=True)
