@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
 import sqlite3
-from datetime import datetime
 import os
+from datetime import datetime
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -10,6 +10,13 @@ app.secret_key = "pg_lounge_secret"
 ADMIN_USER = "pglounge_admin"
 ADMIN_PASSWORD = "pg2026"
 
+UPLOAD_PRATOS = "static/uploads/pratos"
+UPLOAD_EVENTOS = "static/uploads/eventos"
+
+# =========================
+# FUNÇÕES AUXILIARES
+# =========================
+
 def formatar_data_evento(data_evento):
     data = datetime.strptime(
         data_evento,
@@ -17,6 +24,13 @@ def formatar_data_evento(data_evento):
     )
 
     return data.strftime("%d/%m/%Y às %H:%M")
+
+def admin_logado():
+    return "admin" in session
+
+# =========================
+# FUNÇÕES DE CONSULTA AO DB
+# =========================
 
 def get_pratos():
     conn = sqlite3.connect("database.db")
@@ -207,6 +221,10 @@ def get_eventos_home():
 
     return eventos_formatados
 
+# =========================
+# PÁGINAS PÚBLICAS
+# =========================
+
 @app.route("/")
 def home():
     feedbacks = get_feedbacks_home()
@@ -266,39 +284,55 @@ def feedbacks():
     feedbacks = get_feedbacks()
     return render_template("feedbacks.html", feedbacks=feedbacks)
 
-@app.route("/admin/feedbacks")
-def admin_feedbacks():
+@app.route("/trabalhe-conosco", methods=["GET", "POST"])
+def trabalhe_conosco():
 
-    if "admin" not in session:
-        return redirect(url_for("login"))
+    if request.method == "POST":
 
-    feedbacks = get_feedbacks_admin()
+        nome = request.form["nome"]
+        email = request.form["email"]
+        telefone = request.form["telefone"]
+        area_interesse = request.form["area_interesse"]
+        disponibilidade = request.form["disponibilidade"]
+        experiencia = request.form["experiencia"]
+        data_envio = datetime.now().strftime("%d/%m/%Y %H:%M")
 
-    return render_template(
-        "admin_feedbacks.html",
-        feedbacks=feedbacks
-    )
-    
-@app.route("/admin/excluir-feedback/<int:id>")
-def excluir_feedback(id):
+        conn = sqlite3.connect("database.db")
+        cursor = conn.cursor()
 
-    if "admin" not in session:
-        return redirect(url_for("login"))
+        cursor.execute("""
+        INSERT INTO curriculos (
+            nome,
+            email,
+            telefone,
+            area_interesse,
+            disponibilidade,
+            experiencia,
+            data_envio
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            nome,
+            email,
+            telefone,
+            area_interesse,
+            disponibilidade,
+            experiencia,
+            data_envio
+        ))
 
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
+        conn.commit()
+        conn.close()
 
-    cursor.execute(
-        "DELETE FROM feedbacks WHERE id = ?",
-        (id,)
-    )
+        flash("Currículo enviado com sucesso!")
 
-    conn.commit()
-    conn.close()
+        return redirect(url_for("trabalhe_conosco"))
 
-    flash("Feedback excluído com sucesso!")
+    return render_template("trabalhe_conosco.html")
 
-    return redirect(url_for("admin_feedbacks"))
+# =========================
+# AUTENTICAÇÃO
+# =========================
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -320,16 +354,6 @@ def login():
 
     return render_template("login.html")
 
-@app.route("/admin")
-def admin():
-
-    if "admin" not in session:
-        return redirect(url_for("login"))
-
-    dashboard = get_dashboard_data()
-
-    return render_template("admin.html", dashboard=dashboard)
-
 @app.route("/logout")
 def logout():
 
@@ -337,10 +361,66 @@ def logout():
 
     return redirect(url_for("home"))
 
+# =========================
+# DASHBOARD ADMIN
+# =========================
+
+@app.route("/admin")
+def admin():
+
+    if not admin_logado():
+        return redirect(url_for("login"))
+
+    dashboard = get_dashboard_data()
+
+    return render_template("admin.html", dashboard=dashboard)
+
+# =========================
+# CRUD DE FEEDBACKS
+# =========================
+
+@app.route("/admin/feedbacks")
+def admin_feedbacks():
+
+    if not admin_logado():
+        return redirect(url_for("login"))
+
+    feedbacks = get_feedbacks_admin()
+
+    return render_template(
+        "admin_feedbacks.html",
+        feedbacks=feedbacks
+    )
+    
+@app.route("/admin/excluir-feedback/<int:id>")
+def excluir_feedback(id):
+
+    if not admin_logado():
+        return redirect(url_for("login"))
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM feedbacks WHERE id = ?",
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    flash("Feedback excluído com sucesso!")
+
+    return redirect(url_for("admin_feedbacks"))
+
+# =========================
+# CRUD DE PRATOS
+# =========================
+
 @app.route("/admin/cardapio")
 def admin_cardapio():
 
-    if "admin" not in session:
+    if not admin_logado():
         return redirect(url_for("login"))
 
     pratos = get_pratos_admin()
@@ -350,31 +430,10 @@ def admin_cardapio():
         pratos=pratos
     )
     
-@app.route("/admin/excluir-prato/<int:id>")
-def excluir_prato(id):
-
-    if "admin" not in session:
-        return redirect(url_for("login"))
-
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
-
-    cursor.execute(
-        "DELETE FROM pratos WHERE id = ?",
-        (id,)
-    )
-
-    conn.commit()
-    conn.close()
-    
-    flash("Prato excluído com sucesso!")
-
-    return redirect(url_for("admin_cardapio"))
-
 @app.route("/admin/adicionar-prato", methods=["GET", "POST"])
 def adicionar_prato():
 
-    if "admin" not in session:
+    if not admin_logado():
         return redirect(url_for("login"))
 
     if request.method == "POST":
@@ -389,7 +448,7 @@ def adicionar_prato():
 
         imagem.save(
             os.path.join(
-                "static/uploads/pratos",
+                UPLOAD_PRATOS,
                 nome_arquivo
             )
         )
@@ -421,7 +480,7 @@ def adicionar_prato():
 @app.route("/admin/editar-prato/<int:id>", methods=["GET", "POST"])
 def editar_prato(id):
 
-    if "admin" not in session:
+    if not admin_logado():
         return redirect(url_for("login"))
 
     conn = sqlite3.connect("database.db")
@@ -441,7 +500,7 @@ def editar_prato(id):
 
             imagem.save(
                 os.path.join(
-                    "static/uploads/pratos",
+                    UPLOAD_PRATOS,
                     nome_arquivo
                 )
             )
@@ -493,57 +552,36 @@ def editar_prato(id):
         "editar_prato.html",
         prato=prato
     )
+    
+@app.route("/admin/excluir-prato/<int:id>")
+def excluir_prato(id):
 
-@app.route("/trabalhe-conosco", methods=["GET", "POST"])
-def trabalhe_conosco():
+    if not admin_logado():
+        return redirect(url_for("login"))
 
-    if request.method == "POST":
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
 
-        nome = request.form["nome"]
-        email = request.form["email"]
-        telefone = request.form["telefone"]
-        area_interesse = request.form["area_interesse"]
-        disponibilidade = request.form["disponibilidade"]
-        experiencia = request.form["experiencia"]
-        data_envio = datetime.now().strftime("%d/%m/%Y %H:%M")
+    cursor.execute(
+        "DELETE FROM pratos WHERE id = ?",
+        (id,)
+    )
 
-        conn = sqlite3.connect("database.db")
-        cursor = conn.cursor()
+    conn.commit()
+    conn.close()
+    
+    flash("Prato excluído com sucesso!")
 
-        cursor.execute("""
-        INSERT INTO curriculos (
-            nome,
-            email,
-            telefone,
-            area_interesse,
-            disponibilidade,
-            experiencia,
-            data_envio
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (
-            nome,
-            email,
-            telefone,
-            area_interesse,
-            disponibilidade,
-            experiencia,
-            data_envio
-        ))
-
-        conn.commit()
-        conn.close()
-
-        flash("Currículo enviado com sucesso!")
-
-        return redirect(url_for("trabalhe_conosco"))
-
-    return render_template("trabalhe_conosco.html")
+    return redirect(url_for("admin_cardapio"))
+    
+# =========================
+# CRUD DE CURRÍCULOS
+# =========================
 
 @app.route("/admin/curriculos")
 def admin_curriculos():
 
-    if "admin" not in session:
+    if not admin_logado():
         return redirect(url_for("login"))
 
     curriculos = get_curriculos()
@@ -556,7 +594,7 @@ def admin_curriculos():
 @app.route("/admin/excluir-curriculo/<int:id>")
 def excluir_curriculo(id):
 
-    if "admin" not in session:
+    if not admin_logado():
         return redirect(url_for("login"))
 
     conn = sqlite3.connect("database.db")
@@ -577,7 +615,7 @@ def excluir_curriculo(id):
 @app.route("/admin/exportar-curriculos")
 def exportar_curriculos():
 
-    if "admin" not in session:
+    if not admin_logado():
         return redirect(url_for("login"))
 
     conn = sqlite3.connect("database.db")
@@ -615,10 +653,14 @@ def exportar_curriculos():
         }
     )
     
+# =========================
+# CRUD DE EVENTOS
+# =========================
+    
 @app.route("/admin/eventos")
 def admin_eventos():
 
-    if "admin" not in session:
+    if not admin_logado():
         return redirect(url_for("login"))
 
     eventos = get_eventos()
@@ -631,7 +673,7 @@ def admin_eventos():
 @app.route("/admin/adicionar-evento", methods=["GET", "POST"])
 def adicionar_evento():
 
-    if "admin" not in session:
+    if not admin_logado():
         return redirect(url_for("login"))
 
     if request.method == "POST":
@@ -645,7 +687,7 @@ def adicionar_evento():
 
         imagem.save(
             os.path.join(
-                "static/uploads/eventos",
+                UPLOAD_EVENTOS,
                 nome_arquivo
             )
         )
@@ -681,7 +723,7 @@ def adicionar_evento():
 @app.route("/admin/editar-evento/<int:id>", methods=["GET", "POST"])
 def editar_evento(id):
 
-    if "admin" not in session:
+    if not admin_logado():
         return redirect(url_for("login"))
 
     conn = sqlite3.connect("database.db")
@@ -700,7 +742,7 @@ def editar_evento(id):
 
             imagem.save(
                 os.path.join(
-                    "static/uploads/eventos",
+                    UPLOAD_EVENTOS,
                     nome_arquivo
                 )
             )
@@ -760,7 +802,7 @@ def editar_evento(id):
 @app.route("/admin/excluir-evento/<int:id>")
 def excluir_evento(id):
 
-    if "admin" not in session:
+    if not admin_logado():
         return redirect(url_for("login"))
 
     conn = sqlite3.connect("database.db")

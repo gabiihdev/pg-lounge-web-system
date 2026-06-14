@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - PG Lounge</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="admin-body">
+
+    <aside class="admin-sidebar">
+
+        <div class="admin-logo">
+            <img src="{{ url_for('static', filename='img/logo.png') }}">
+            <h2>PG Admin</h2>
+        </div>
+
+        <nav class="admin-menu">
+
+            <a href="/admin">
+                <i data-lucide="layout-dashboard"></i>
+                Dashboard
+            </a>
+
+            <a href="/admin/cardapio">
+                <i data-lucide="coffee"></i>
+                Cardápio
+            </a>
+
+            <a href="/admin/eventos">
+                <i data-lucide="calendar"></i>
+                Eventos
+            </a>
+
+            <a href="/admin/feedbacks">
+                <i data-lucide="message-square"></i>
+                Feedbacks
+            </a>
+
+            <a href="/admin/curriculos">
+                <i data-lucide="file-text"></i>
+                Currículos
+            </a>
+
+                    <div class="admin-logout">
+            <a href="/logout">
+                <i data-lucide="log-out"></i>
+                Sair
+            </a>
+        </div>
+
+        </nav>
+
+    </aside>
+
+    <main class="admin-content">
+
+        <header class="admin-topbar">
+            <h1>Painel Administrativo</h1>
+        </header>
+
+        {% with mensagens = get_flashed_messages() %}
+        {% if mensagens %}
+
+        <div class="flash-container">
+            {% for mensagem in mensagens %}
+            <div class="flash-message">
+                {{ mensagem }}
+            </div>
+            {% endfor %}
+        </div>
+
+        {% endif %}
+        {% endwith %}
+
+        <section class="admin-page-content">
+            {% block content %}{% endblock %}
+        </section>
+
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+
+</html>
