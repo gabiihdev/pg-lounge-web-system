@@ -128,6 +128,14 @@ Principais tabelas:
 * curriculos
 * eventos
 
+## Apresentação
+
+Abaixo está o vídeo de apresentação oficial do Pet Health, que inclui os slides explicativos e a demonstração prática do sistema em funcionamento:
+
+👉 [Clique aqui para assistir à apresentação completa](Apresentação%20Final.mp4)
+
+Caso o vídeo não abra diretamente no navegador, faça o download e abra localmente.
+
 ## Autora
 
 **Gabriela Oinhos Almeida**
